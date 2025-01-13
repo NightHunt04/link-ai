@@ -3,7 +3,7 @@ import { GoogleAuthProvider } from "firebase/auth"
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: "ai-link.vercel.app",
+  authDomain: "socialai-84ffe.firebaseapp.com",
   projectId: "socialai-84ffe",
   storageBucket: "socialai-84ffe.firebasestorage.app",
   messagingSenderId: "302294878610",
