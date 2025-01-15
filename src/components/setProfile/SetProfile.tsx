@@ -65,7 +65,7 @@ export default function SetProfile() {
         <h3 className="w-full justify-center text-center font-bold text-4xl mb-1 flex items-center gap-1">
             Hey,&nbsp;<span className="font-extrabold">
                 <Text gradient={{ from: '#ff1b6b', to: '#45caff'}} animate animateDuration={1500}>
-                    {cookies.get('user_display_name').substring(0, 10)}
+                    {cookies.get('user_display_name') ? cookies.get('user_display_name').substring(0, 10) : ''}
                 </Text>    
             </span>
                 
