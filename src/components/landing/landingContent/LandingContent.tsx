@@ -8,6 +8,8 @@ import { getAuth, signInWithPopup } from "firebase/auth"
 import { provider } from "@/config/firebaseConfig"
 import Cookies from 'universal-cookie'
 import { useNavigate } from "react-router-dom"
+import { checkIsUserSigned } from "@/utils/checkIsUserSigned"
+import { signNewUser } from "@/utils/signNewUser"
 
 interface Personalities {
     type: string
@@ -55,10 +57,34 @@ export default function LandingContent() {
         }
     ]
 
-     const handleSignin = () => {
+    // const handleSignin = () => {
+    //     const auth = getAuth()
+    //     signInWithPopup(auth, provider)
+    //       .then((result) => {
+    //         const user = result.user // Signed in user info
+    
+    //         let date = new Date("2025-01-13T22:00:00+05:30")
+    
+    //         // expires (1 day)
+    //         date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+    
+    //         cookies.set('user_email', user.email, { expires: date })
+    //         cookies.set('user_display_name', user.displayName, { expires: date })
+    //         cookies.set('user_display_picture', user.photoURL, { expires: date })
+    //         cookies.set('user_uid', user.uid, { expires: date })
+    
+    //         console.log('user', user)
+    //         console.log(cookies.get('user_display_picture'))
+    //         navigate('/home')
+    //       }).catch((err) => {
+    //         console.error('something went wrong', err)
+    //       })
+    // }
+
+    const handleSignin = () => {
         const auth = getAuth()
         signInWithPopup(auth, provider)
-          .then((result) => {
+          .then(async (result) => {
             const user = result.user // Signed in user info
     
             let date = new Date("2025-01-13T22:00:00+05:30")
@@ -66,17 +92,28 @@ export default function LandingContent() {
             // expires (1 day)
             date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
     
-            cookies.set('user_email', user.email, { expires: date })
-            cookies.set('user_display_name', user.displayName, { expires: date })
-            cookies.set('user_display_picture', user.photoURL, { expires: date })
-            cookies.set('user_uid', user.uid, { expires: date })
+            cookies.set('user_email', user.email)
+            cookies.set('user_display_name', user.displayName)
+            cookies.set('user_display_picture', user.photoURL)
+            cookies.set('user_uid', user.uid)
     
-            console.log('user', user)
-            console.log(cookies.get('user_display_picture'))
-            navigate('/home')
+            // check wether the user is already signed or not
+            if (user.email && await checkIsUserSigned(user.email)) 
+                navigate('/home')
+            else {
+              if (user.email && user.uid && user.displayName) {
+                signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName })
+                navigate(`/set-profile/${user.uid}`)
+              } else {
+                console.error('Something went wrong while signing in')
+              }
+            }
+    
+            // console.log('user', user)
+            // console.log(cookies.get('user_display_picture'))
           }).catch((err) => {
             console.error('something went wrong', err)
-          })
+        })
     }
 
     useEffect(() => {
