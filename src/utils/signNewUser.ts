@@ -18,7 +18,7 @@ export const signNewUser = async ({ email, uid, displayName }: Props): Promise<b
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'http://localhost:8000/api/user/sign-user',
+        url: `${import.meta.env.VITE_BACKEND_BASE_URL}/api/user/sign-user`,
         headers: { 
             'Content-Type': 'application/json'
         },
