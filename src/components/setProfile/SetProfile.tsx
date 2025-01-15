@@ -18,6 +18,7 @@ export default function SetProfile() {
 
     const handleOpenFileDialog = () => {
         setError(false)
+        console.log(error)
         let input = document.createElement('input')
         input.type = 'file'
         input.onchange = (_) => {
