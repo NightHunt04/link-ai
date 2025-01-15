@@ -4,6 +4,10 @@ import { TypeAnimation } from 'react-type-animation'
 import ReactEmojis from '@souhaildev/reactemojis'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
+import { getAuth, signInWithPopup } from "firebase/auth"
+import { provider } from "@/config/firebaseConfig"
+import Cookies from 'universal-cookie'
+import { useNavigate } from "react-router-dom"
 
 interface Personalities {
     type: string
@@ -11,6 +15,8 @@ interface Personalities {
 }
 
 export default function LandingContent() {
+    const navigate = useNavigate()
+    const cookies = new Cookies(null, { path: '/' })
     const [count, setCount] = useState(334)
     const [count2, setCount2] = useState(424)
 
@@ -49,6 +55,30 @@ export default function LandingContent() {
         }
     ]
 
+     const handleSignin = () => {
+        const auth = getAuth()
+        signInWithPopup(auth, provider)
+          .then((result) => {
+            const user = result.user // Signed in user info
+    
+            let date = new Date("2025-01-13T22:00:00+05:30")
+    
+            // expires (1 day)
+            date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+    
+            cookies.set('user_email', user.email, { expires: date })
+            cookies.set('user_display_name', user.displayName, { expires: date })
+            cookies.set('user_display_picture', user.photoURL, { expires: date })
+            cookies.set('user_uid', user.uid, { expires: date })
+    
+            console.log('user', user)
+            console.log(cookies.get('user_display_picture'))
+            navigate('/home')
+          }).catch((err) => {
+            console.error('something went wrong', err)
+          })
+    }
+
     useEffect(() => {
         const interval = setInterval(() => {
         setCount((prevCount) => (prevCount >= 917 ? 334 : prevCount + 4))
@@ -77,7 +107,7 @@ export default function LandingContent() {
             </div>
         </div>
 
-        <Button variant='outline' className="text-sm font-semibold flex items-center gap-2 shadow-md mt-10 md:mt-4">
+        <Button onClick={handleSignin} variant='outline' className="text-sm font-semibold flex items-center gap-2 shadow-md mt-10 md:mt-4">
             <p>Get Started</p>
         </Button>
         

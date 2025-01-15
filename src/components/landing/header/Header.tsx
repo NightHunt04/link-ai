@@ -1,23 +1,50 @@
 import { ModeToggle } from "@/components/mode-toggle"
 import { Button } from "@/components/ui/button"
 import { provider } from "@/config/firebaseConfig"
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
+import { getAuth, signInWithPopup } from 'firebase/auth'
+import Cookies from 'universal-cookie'
+import { useNavigate } from "react-router-dom"
+import { checkIsUserSigned } from "@/utils/checkIsUserSigned"
+import { signNewUser } from "@/utils/signNewUser"
+import { useLinkContext } from "@/context/linkContext"
 
 export default function Header() {
+  const linkContext = useLinkContext()
+  const cookies = new Cookies(null, { path: '/' })
+  const navigate = useNavigate()
+
   const handleSignin = () => {
     const auth = getAuth()
     signInWithPopup(auth, provider)
-      .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result)
-        console.log('cred', credential)
-        const token = credential?.accessToken
-        console.log('token', token)
+      .then(async (result) => {
         const user = result.user // Signed in user info
-        console.log('user', user)
+
+        let date = new Date("2025-01-13T22:00:00+05:30")
+
+        // expires (1 day)
+        date.setTime(date.getTime() + (24 * 60 * 60 * 1000))
+
+        cookies.set('user_email', user.email)
+        cookies.set('user_display_name', user.displayName)
+        cookies.set('user_display_picture', user.photoURL)
+        cookies.set('user_uid', user.uid)
+
+        // check wether the user is already signed or not
+        if (user.email && await checkIsUserSigned(user.email)) 
+          navigate('/home')
+        else {
+          if (user.email && user.uid && user.displayName) {
+            signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName })
+            linkContext?.setIsNew(true)
+            navigate(`/set-profile/${user.uid}`)
+          } else {
+            console.error('Something went wrong while signing in')
+          }
+        }
+
+        // console.log('user', user)
+        // console.log(cookies.get('user_display_picture'))
       }).catch((err) => {
-        // const errorCode = err.code
-        // const errorMessage = err.message
-        // const email = err.customData.email
         console.error('something went wrong', err)
       })
   }
