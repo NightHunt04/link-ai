@@ -20,8 +20,8 @@ function App() {
 
   return (
     <ThemeProvider>
-      <div className="font-inter w-full h-screen flex items-start justify-center relative">
-        <div className='w-[95%] sm:w-[90%] md:w-[75%] lg:w-[50%] flex flex-col items-center justify-center'>
+      <div className="font-inter w-full max-h-screen flex items-start justify-center relative">
+        <div className='w-[95%] h-full sm:w-[90%] md:w-[75%] lg:w-[50%] flex flex-col items-center justify-center'>
           <Routes>
             <Route path='/' element={<LandingPage />} />
             <Route path='/home' element={<Home />} />

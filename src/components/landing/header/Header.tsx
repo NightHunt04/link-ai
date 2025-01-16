@@ -14,6 +14,7 @@ export default function Header() {
   const navigate = useNavigate()
 
   const handleSignin = () => {
+    // navigate('/home')
     const auth = getAuth()
     signInWithPopup(auth, provider)
       .then(async (result) => {

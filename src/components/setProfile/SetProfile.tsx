@@ -7,13 +7,17 @@ import Text from '@carefully-coded/react-text-gradient'
 import { Button } from "../ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { setUserProfile } from "@/utils/setUserProfile"
+import { DEFAULT_PFP } from "@/constants/defaultPfp"
+import WavingDotsLoader from "../loader/WavingDotsLoader"
 
 export default function SetProfile() {
-    const [pfp, setPfp] = useState('/assets/default-pfp.jpg')
+    const [pfp, setPfp] = useState(DEFAULT_PFP)
     const [error, setError] = useState(false)
     const cookies = new Cookies(null, { path: '/' })
     const [username, setUsername] = useState(cookies.get('user_display_name'))
     const [bio, setBio] = useState('')
+    const [loader, setLoader] = useState(false)
     const navigate = useNavigate()
 
     const handleOpenFileDialog = () => {
@@ -31,15 +35,25 @@ export default function SetProfile() {
                 if (file) {
                     const reader = new FileReader()
                     reader.onload = () => {
-                        if (reader.result) {
+                        if (reader.result) 
                             setPfp(reader.result as string)
-                        }
                     }
                     reader.readAsDataURL(file)
                 }
             }
         }
-        input.click();
+        input.click()
+    }
+
+    const handleConfirmSetProfile = async () => {
+        if (pfp && username) {
+            setLoader(true)
+            const res = await setUserProfile({ email: cookies.get('user_email'), username, pfp, bio })
+
+            if (res) navigate(`/home`)
+            else console.error('Something went wrong while setting profile')
+            setLoader(false)
+        }
     }
 
     useEffect(() => {
@@ -113,7 +127,12 @@ export default function SetProfile() {
             </div>
         </div>
 
-        <Button variant='outline' className="bg-green-500 text-white font-semibold w-[90%] mb-16 md:w-[70%]">Complete setup</Button>
+        <Button 
+            onClick={handleConfirmSetProfile}
+            variant='outline' 
+            className="bg-green-500 text-white font-semibold w-[90%] mb-16 md:w-[70%]">
+                {loader ? <WavingDotsLoader /> : <p>Complete setup</p>}
+            </Button>
     </div>
   )
 }
