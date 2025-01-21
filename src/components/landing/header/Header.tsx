@@ -6,10 +6,8 @@ import Cookies from 'universal-cookie'
 import { useNavigate } from "react-router-dom"
 import { checkIsUserSigned } from "@/utils/checkIsUserSigned"
 import { signNewUser } from "@/utils/signNewUser"
-import { useLinkContext } from "@/context/linkContext"
 
 export default function Header() {
-  const linkContext = useLinkContext()
   const cookies = new Cookies(null, { path: '/' })
   const navigate = useNavigate()
 
@@ -34,10 +32,11 @@ export default function Header() {
         if (user.email && await checkIsUserSigned(user.email)) 
           navigate('/home')
         else {
-          if (user.email && user.uid && user.displayName) {
-            signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName })
-            linkContext?.setIsNew(true)
-            navigate(`/set-profile/${user.uid}`)
+
+          if (user.email && user.uid && user.displayName && user.photoURL) {
+            signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName, pfp: user.photoURL })
+            navigate('/home')
+          //   navigate(`/set-profile/${user.uid}`)
           } else {
             console.error('Something went wrong while signing in')
           }

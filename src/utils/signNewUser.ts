@@ -10,10 +10,11 @@ interface Props {
     email: string
     uid: string
     displayName: string
+    pfp: string
 }
 
-export const signNewUser = async ({ email, uid, displayName }: Props): Promise<boolean | undefined> => {
-    let data = JSON.stringify({ email, displayName, uid })
+export const signNewUser = async ({ email, uid, displayName, pfp }: Props): Promise<boolean | undefined> => {
+    let data = JSON.stringify({ email, displayName, uid, pfp })
       
     let config = {
         method: 'post',

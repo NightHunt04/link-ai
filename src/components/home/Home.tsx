@@ -2,15 +2,12 @@ import Cookies from 'universal-cookie'
 import { useNavigate } from 'react-router-dom'
 import { BellDot, HomeIcon, LogOut, Plus, Search, SettingsIcon, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { checkUserSetProfile } from '@/utils/checkUserSetProfile'
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-
-// import Header from '../landing/header/Header'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,44 +19,46 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { ModeToggle } from '../mode-toggle'
 import { Button } from '../ui/button'
+import HomePage from './HomePage'
+import CreatePost from './CreatePost'
 
-// enum Nav {
-//   home,
-//   search,
-//   post,
-//   account,
-//   settings
-// }
+enum Nav {
+  home,
+  search,
+  post,
+  account,
+  settings
+}
 
 export default function Home() {
   const cookies = new Cookies(null, { path: '/' })
   const navigate = useNavigate()
-  const [visible, setVisible] = useState(true)
+  // const [visible, setVisible] = useState(true)
   // const [hoverSidebar, setHoverSidebar] = useState(false)
-  // const [currentNav, setCurrentNav] = useState(0)
+  const [currentNav, setCurrentNav] = useState(0)
 
   useEffect(() => {
-    const checkSetProfile = async () => {
-        const res = await checkUserSetProfile(cookies.get('user_email'))
+    // const checkSetProfile = async () => {
+    //     const res = await checkUserSetProfile(cookies.get('user_email'))
 
-        console.log(res)
+    //     console.log(res)
 
-        if (res) setVisible(true)
-        else navigate(`/set-profile/${cookies.get('user_uid')}`)
-        return  
-    }
+    //     if (res) setVisible(true)
+    //     else navigate(`/set-profile/${cookies.get('user_uid')}`)
+    //     return  
+    // }
     
     if (!cookies.get('user_uid') && !cookies.get('user_email') && !cookies.get('user_display_name')) 
       navigate('/')
 
-    else 
-      checkSetProfile()
+    // else 
+    //   checkSetProfile()
     
   }, [])
 
   return (
-    <div className={`w-full font-inter relative h-screen ${visible ? 'flex': 'hidden'} flex-col items-center justify-start`}>
-        <div className='w-full z-20 bg-white/40 dark:bg-black/40 backdrop-blur-sm flex items-center absolute top-0 justify-between px-2 md:px-5 py-3'>
+    <div className={`w-full font-inter relative h-screen flex flex-col items-center justify-start`}>
+        <div className='w-full z-20 bg-white/40 dark:bg-[#0a0a0ac2] backdrop-blur-sm flex items-center absolute top-0 justify-between px-2 md:px-5 py-3'>
           <h1 className='font-bold text-2xl'>LINK.</h1>
 
           {/* <div className='flex items-center justify-center gap-2'>
@@ -80,7 +79,10 @@ export default function Home() {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button variant='outline' className='rounded-full' size='icon'><HomeIcon className='w-5 h-5' /></Button>
+                  <Button 
+                    onClick={() => setCurrentNav(Nav.home)} 
+                    variant='outline' 
+                    className={`${Nav.home === currentNav ? 'bg-red-700 text-white' : ''} rounded-full`} size='icon'><HomeIcon className='w-5 h-5' /></Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Home</p>
@@ -89,7 +91,11 @@ export default function Home() {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button variant='outline' className='rounded-full' size='icon'><Search className='w-5 h-5' /></Button>
+                  <Button 
+                    onClick={() => setCurrentNav(Nav.search)} 
+                    variant='outline' 
+                    className={`${Nav.search === currentNav ? 'bg-red-700 text-white' : ''} rounded-full`} 
+                    size='icon'><Search className='w-5 h-5' /></Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Search user or post</p>
@@ -98,7 +104,11 @@ export default function Home() {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button variant='outline' className='rounded-full' size='icon'><Plus className='w-5 h-5' /></Button>
+                  <Button 
+                    onClick={() => setCurrentNav(Nav.post)} 
+                    variant='outline' 
+                    className={`${Nav.post === currentNav ? 'bg-red-700 text-white' : ''} rounded-full`} 
+                    size='icon'><Plus className='w-5 h-5' /></Button>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Create a post</p>
@@ -109,10 +119,10 @@ export default function Home() {
                 <Tooltip>
                   <TooltipTrigger>
                     <DropdownMenuTrigger>
-                      <div className='flex gap-1 items-center justify-center rounded-full border border-gray-300 p-1 dark:border-gray-800'>
+                      <div className='flex gap-1 items-center rounded-full justify-center border border-gray-300 p-1 dark:border-gray-800'>
                         <Avatar className='w-7 h-7'>
-                          <AvatarImage src="https://github.com/shadcn.png" />
-                          <AvatarFallback>CN</AvatarFallback>
+                          <AvatarImage src={cookies.get('user_display_picture') ? cookies.get('user_display_picture') : ''} />
+                          <AvatarFallback>{cookies.get('user_display_name') ? cookies.get('user_display_name').substring(0, 2) : ''}</AvatarFallback>
                         </Avatar>
                       </div>
                     </DropdownMenuTrigger>                
@@ -146,14 +156,11 @@ export default function Home() {
             </TooltipProvider>
           </div>
 
-          <div className='w-full h-full md:h-[95%]  overflow-y-auto mt-10 flex p-2 md:order-2 order-1 flex-col items-center justify-start gap-1 border-gray-200 dark:border-gray-800 rounded-lg'>
-            posts here
+          <div className='w-full h-[92%] md:h-[100%] flex p-2 md:order-2 order-1 flex-col items-center justify-start'>
+            {currentNav === Nav.home && <HomePage />}
+            {currentNav === Nav.post && <CreatePost />}
           </div>
         </div>
-
-        {/* <div className='flex w-full px-4 py-3 items-center justify-center'>
-          bottom
-        </div> */}
     </div>
   )
 }

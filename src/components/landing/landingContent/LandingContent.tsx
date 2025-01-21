@@ -101,8 +101,8 @@ export default function LandingContent() {
             if (user.email && await checkIsUserSigned(user.email)) 
                 navigate('/home')
             else {
-              if (user.email && user.uid && user.displayName) {
-                signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName })
+              if (user.email && user.uid && user.displayName && user.photoURL) {
+                signNewUser({ email: user.email, uid: user.uid, displayName: user.displayName, pfp: user.photoURL })
                 navigate(`/set-profile/${user.uid}`)
               } else {
                 console.error('Something went wrong while signing in')

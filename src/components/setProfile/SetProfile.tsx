@@ -48,6 +48,7 @@ export default function SetProfile() {
     const handleConfirmSetProfile = async () => {
         if (pfp && username) {
             setLoader(true)
+            cookies.set('username', username)
             const res = await setUserProfile({ email: cookies.get('user_email'), username, pfp, bio })
 
             if (res) navigate(`/home`)
